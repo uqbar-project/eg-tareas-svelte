@@ -725,6 +725,11 @@
     loupe "^3.1.2"
     tinyrainbow "^1.2.0"
 
+"@zerodevx/svelte-toast@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@zerodevx/svelte-toast/-/svelte-toast-0.9.6.tgz#7445524743c2521dc865b123c180f5f37d942ff4"
+  integrity sha512-nHlTrCjverlPK9yukK6fqbG3e/R+f10ldrc4nJHOe2qNDScuPTuYVSFEk2dDDtzWAwTN5pmdEXgA3M2RbT8jiw==
+
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"

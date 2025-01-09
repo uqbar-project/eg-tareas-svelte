@@ -46,10 +46,10 @@ export class Tarea {
   contiene(palabra: string): boolean {
     return (
       (this.descripcion.toUpperCase() || '').includes(palabra.toUpperCase()) ||
-      (!!this.asignatario &&
+      !!this.asignatario &&
         (this.asignatario.nombre.toUpperCase() || '').includes(
           palabra.toUpperCase()
-        ))
+        )
     )
   }
 

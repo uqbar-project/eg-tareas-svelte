@@ -1,3 +1,24 @@
+.main-title {
+  font-size: x-large;
+  font-weight: bold;
+  margin: 1.5rem 0;
+}
+.resumen {
+  margin: 1rem 0;
+  font-size: 1.1em;
+}
+
+.header {
+  padding: 1rem 1rem;
+  margin: 0.5rem 0;
+  align-items: center;
+  background-color: thistle;
+  font-size: 1.1rem;
+}
+
+.right {
+  text-align: center;
+}
 
 .row {
   display: grid;
@@ -7,6 +28,8 @@
 .column {
   display: flex;
   flex-direction: column;
+  gap: 5px;
+  padding: 7px 0;
 }
 
 .title {
@@ -21,6 +44,24 @@
 .porcentaje {
   color: darkslategray;
   padding: 15px;
-  text-align: end;
+  text-align: center;
   font-weight: bold;
+}
+
+.icon {
+  height: auto;
+  width: 24px;
+}
+
+.secondary {
+  background-color: unset;
+  border: 0;
+  padding: 0;
+  margin: 10px;
+}
+
+.icon:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+  transition: transform 0.3s ease-in-out;
 }

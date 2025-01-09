@@ -25,7 +25,7 @@ class TareaService {
   }
 
   async eliminarTarea(tarea: Tarea) {
-    return axios.delete(REST_SERVER_URL + '/tareas/' + tarea.id)
+    return axios.delete(REST_SERVER_URL + '/tareas/' + tarea.descripcion)
   }
 
 }
