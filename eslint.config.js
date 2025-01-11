@@ -50,6 +50,7 @@ export default [
       '@/semi': ['error', 'never'],
       '@/quotes': ['warn', 'single'],
       '@/indent': ['warn', 2],
+      '@typescript-eslint/no-non-null-assertion': 'off',
     }
   }
 ]

@@ -4,7 +4,7 @@
   const options = {
   }
 
-  let { children } = $props();
+  let { children } = $props()
 </script>
 
 <SvelteToast {options} />

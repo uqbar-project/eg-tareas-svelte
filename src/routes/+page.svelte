@@ -17,7 +17,7 @@
       tarea.cumplir()
       await tareaService.actualizarTarea(tarea)
       buscarTareas()
-    } catch (error: any) {
+    } catch (error: unknown) {
       showError('Error al cumplir la tarea', error)
     }
   }

@@ -28,8 +28,8 @@
   let { data } = $props()
   const { tarea, asignatarios } = data
   if (!tarea) volver()
+  
   let tareaEdit = $state(tarea!.toJSON())
-
   let fecha = $state(DateTime.fromJSDate(tarea!.fecha!).toUTC().toFormat('yyyy-MM-dd'))
 </script>
 
