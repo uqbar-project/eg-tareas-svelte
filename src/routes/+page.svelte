@@ -1,9 +1,9 @@
 <script lang="ts">
-  import './main.css'
+  import { goto } from '$app/navigation'
+  import { showError } from '$lib/domain/errorHandler'
   import type { Tarea } from '$lib/domain/tarea'
   import { tareaService } from '$lib/services/tareaService'
-  import { toast } from '@zerodevx/svelte-toast'
-  import { getErrorMessage } from '$lib/domain/errorHandler'
+  import './main.css'
 
   let tareas = $state<Tarea[]>([])
   const buscarTareas = async () => {
@@ -18,19 +18,13 @@
       await tareaService.actualizarTarea(tarea)
       buscarTareas()
     } catch (error: any) {
-      console.info('Error al cumplir la tarea', error)
-      toast.push('Error al cumplir la tarea. ' + getErrorMessage(error), {
-        theme: {
-          '--toastBackground': 'darkred',
-          '--toastColor': 'white',
-          '--toastBarBackground': 'lightgray',
-          '--toastWidth': '100%',
-        }
-      })
+      showError('Error al cumplir la tarea', error)
     }
   }
 
-  const editar = (tarea: Tarea) => {}
+  const editar = (tarea: Tarea) => {
+    goto(`/tarea/${tarea.id}`)
+  }
 
   const eliminar = async (tarea: Tarea) => {
     await tareaService.eliminarTarea(tarea)
@@ -55,7 +49,7 @@
       <div class="column">
         <span class="title">{tarea.descripcion}</span>
         <span class="description"
-          >{tarea.asignatario?.nombre ?? '⚪ Sin asignar'} - {tarea.fechaString()}</span
+          >{tarea.asignatario?.nombre ?? '⚪ Sin asignar'} - {tarea.fechaString}</span
         >
       </div>
       <div>

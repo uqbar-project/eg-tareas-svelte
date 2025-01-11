@@ -102,7 +102,7 @@ export class Tarea {
       id: this.id,
       descripcion: this.descripcion,
       iteracion: this.iteracion,
-      fecha: this.fechaString(),
+      fecha: this.fechaString,
       porcentajeCumplimiento: this.porcentajeCumplimiento,
       asignadoA: this.asignatario?.nombre
     }
@@ -113,7 +113,7 @@ export class Tarea {
   // 2. luego cambiarle el timezone a UTC, para que no le reste la distancia al meridiano de Greenwich
   //    (en Argentina le resta 3 horas y pasa a ser el día anterior)
   // 3. y luego sí formatearlo a lo que el backend espera
-  fechaString(): string | undefined {
+  get fechaString(): string | undefined {
     return !this.fecha ? '' : DateTime.fromJSDate(this.fecha).toUTC().toFormat(FORMATO_FECHA)
   }
 

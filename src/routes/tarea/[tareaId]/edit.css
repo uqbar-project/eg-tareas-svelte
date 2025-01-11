@@ -1,0 +1,58 @@
+html {
+  font-size: 16px;
+}
+
+.row-edit {
+  font-size: 1.1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 2rem 0;
+}
+
+.row-edit label {
+  justify-self: end;
+}
+
+.row-edit input, .row-edit select {
+  align-self: baseline;
+  font-size: 1em;
+  padding: 0.25em;
+  margin-top: -0.3em;
+  color: rgb(30, 39, 39);
+}
+
+.button-group-edit {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+}
+
+.button-group-edit button {
+  font-size: 1.1em;
+  height: 3em;
+  width: 15em;
+}
+
+button.primary-edit {
+  color: white;
+  background-color: cadetblue;
+  border: 0;
+}
+
+button.primary-edit:hover {
+  background-color: darkcyan;
+  font-weight: bold;
+}
+
+button.secondary-edit {
+  color: black;
+  background-color: lightgray;
+  border: 1px solid;
+}
+
+button.secondary-edit:hover {
+  background-color: white;
+  font-weight: bold;
+}
