@@ -2,24 +2,10 @@
   import './edit.css'
   import { goto } from '$app/navigation'
   import { tareaService } from '$lib/services/tareaService'
-  import { Tarea } from '$lib/domain/tarea'
+  import { Tarea, ValidationMessage, type TareaJSON } from '$lib/domain/tarea'
   import { DateTime } from 'luxon'
   import { showError } from '$lib/domain/errorHandler'
-
-  const actualizar = async () => {
-    try {
-      const tareaActual: Tarea = Tarea.fromJson(tareaEdit)
-      tareaActual.fecha = DateTime.fromFormat(fecha, 'yyyy-MM-dd').toJSDate()
-      // TODO: generar un componente para mostrar los errores de una tarea
-      tareaActual.validar()
-      if (!tareaActual.invalid) {
-        await tareaService.actualizarTarea(tareaActual)
-        volver()
-      }
-    } catch (error) {
-      showError('Error al actualizar la tarea', error)
-    }
-  }
+  import ValidationField from '$lib/components/ValidationField.svelte'
 
   const volver = () => {
     goto('/')
@@ -28,6 +14,23 @@
   let { data } = $props()
   const { tarea, asignatarios } = data
   if (!tarea) volver()
+
+  let errors: ValidationMessage[] = $state([])
+
+  const actualizar = async () => {
+    try {
+      const tareaActual: Tarea = Tarea.fromJson(tareaEdit)
+      tareaActual.fecha = DateTime.fromFormat(fecha, 'yyyy-MM-dd').toJSDate()
+      tareaActual.validar()
+      errors = tareaActual.errors
+      if (!tareaActual.invalid()) {
+        await tareaService.actualizarTarea(tareaActual)
+        volver()
+      }
+    } catch (error) {
+      showError('Error al actualizar la tarea', error)
+    }
+  }
   
   let tareaEdit = $state(tarea!.toJSON())
   let fecha = $state(DateTime.fromJSDate(tarea!.fecha!).toUTC().toFormat('yyyy-MM-dd'))
@@ -39,6 +42,7 @@
 <div class="row-edit">
   <label for="descripcion">Descripción:</label>
   <input type="text" name="descripcion" bind:value={tareaEdit.descripcion} />
+  <ValidationField errors={errors} field="descripcion"/>
 </div>
 <div class="row-edit">
   <label for="iteracion">Iteración:</label>
@@ -60,6 +64,7 @@
 <div class="row-edit">
   <label for="porcentaje">% cumplimiento:</label>
   <input type="number" name="porcentaje" bind:value={tareaEdit.porcentajeCumplimiento} />
+  <ValidationField errors={errors} field="porcentajeCumplimiento"/>
 </div>
 <div class="button-group-edit">
   <button onclick={actualizar} class="primary-edit">Actualizar</button>

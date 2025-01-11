@@ -125,17 +125,6 @@ export class Tarea {
     return this.errors.length > 0
   }
 
-  hasErrors(field: string): boolean {
-    return this.errors.some((_) => _.field == field)
-  }
-
-  errorsFrom(field: string) {
-    return this.errors
-      .filter((_) => _.field == field)
-      .map((_) => _.message)
-      .join('. ')
-  }
-
   addError(field: string, message: string) {
     this.errors.push(new ValidationMessage(field, message))
   }
