@@ -30,12 +30,19 @@
     await tareaService.eliminarTarea(tarea)
     buscarTareas()
   }
+
+  const crearTarea = () => {
+    goto('/tarea/nueva')
+  }
 </script>
 
 <div class="main-title">Tareas de un equipo de desarrollo</div>
 
 <div class="resumen">
-  Tareas: {tareas.length}
+  <span>
+    <b>Tareas:</b> {tareas.length}
+  </span>
+  <button onclick={crearTarea} class="crear-tarea">➕ Crear tarea</button>
 </div>
 
 <div class="tareas-table">

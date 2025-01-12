@@ -12,7 +12,7 @@
   }
 
   let { data } = $props()
-  const { tarea, asignatarios } = data
+  const { tarea, asignatarios, nuevaTarea } = data
   if (!tarea) volver()
 
   let errors: ValidationMessage[] = $state([])
@@ -24,7 +24,9 @@
       tareaActual.validar()
       errors = tareaActual.errors
       if (!tareaActual.invalid()) {
-        await tareaService.actualizarTarea(tareaActual)
+        nuevaTarea ?
+          await tareaService.crearTarea(tareaActual) :
+          await tareaService.actualizarTarea(tareaActual)
         volver()
       }
     } catch (error) {
@@ -37,16 +39,19 @@
 </script>
 
 
-<h1>Editar Tarea</h1>
+<h1>{nuevaTarea ? 'Crear' : 'Editar'} Tarea</h1>
 <hr>
 <div class="row-edit">
   <label for="descripcion">Descripción:</label>
   <input type="text" name="descripcion" bind:value={tareaEdit.descripcion} />
+  <span></span>
   <ValidationField errors={errors} field="descripcion"/>
 </div>
 <div class="row-edit">
   <label for="iteracion">Iteración:</label>
   <input type="text" name="iteracion" bind:value={tareaEdit.iteracion} />
+  <span></span>
+  <ValidationField errors={errors} field="iteracion"/>
 </div>
 <div class="row-edit">
   <label for="asignatario">Asignatario:</label>
@@ -56,17 +61,22 @@
       <option value={asignatario.nombre}>{asignatario.nombre}</option>
     {/each}
   </select>
+  <span></span>
+  <ValidationField errors={errors} field="asignadoA"/>
 </div>
 <div class="row-edit">
   <label for="fecha">Fecha:</label>
   <input type="date" name="fecha" bind:value={fecha} />
+  <span></span>
+  <ValidationField errors={errors} field="fecha"/>
 </div>
 <div class="row-edit">
   <label for="porcentaje">% cumplimiento:</label>
   <input type="number" name="porcentaje" bind:value={tareaEdit.porcentajeCumplimiento} />
+  <span></span>
   <ValidationField errors={errors} field="porcentajeCumplimiento"/>
 </div>
 <div class="button-group-edit">
-  <button onclick={actualizar} class="primary-edit">Actualizar</button>
+  <button onclick={actualizar} class="primary-edit">{nuevaTarea ? 'Crear' : 'Actualizar'}</button>
   <button onclick={volver} class="secondary-edit">Volver</button>
 </div>

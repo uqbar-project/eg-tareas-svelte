@@ -12,7 +12,8 @@
   padding: 1rem 1rem;
   margin: 0.5rem 0;
   align-items: center;
-  background-color: thistle;
+  background-color: rgb(7, 191, 194);
+  color: white;
   font-size: 1.1rem;
 }
 
@@ -64,4 +65,18 @@
   cursor: pointer;
   transform: scale(1.1);
   transition: transform 0.3s ease-in-out;
+}
+
+.crear-tarea {
+  background-color: antiquewhite;
+  height: 2.5rem;
+  width: 8em;
+  font-size: 1em;
+  margin: 0 1em;
+  border: 1px solid;
+}
+
+.crear-tarea:hover {
+  cursor: pointer;
+  background-color: lightyellow;  
 }
