@@ -2,7 +2,7 @@
   import './edit.css'
   import { goto } from '$app/navigation'
   import { tareaService } from '$lib/services/tareaService'
-  import { Tarea, ValidationMessage, type TareaJSON } from '$lib/domain/tarea'
+  import { Tarea, ValidationMessage } from '$lib/domain/tarea'
   import { DateTime } from 'luxon'
   import { showError } from '$lib/domain/errorHandler'
   import ValidationField from '$lib/components/ValidationField.svelte'
@@ -24,8 +24,9 @@
       tareaActual.validar()
       errors = tareaActual.errors
       if (!tareaActual.invalid()) {
-        nuevaTarea ?
-          await tareaService.crearTarea(tareaActual) :
+        if (nuevaTarea)
+          await tareaService.crearTarea(tareaActual)
+        else
           await tareaService.actualizarTarea(tareaActual)
         volver()
       }

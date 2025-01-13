@@ -20,7 +20,7 @@
 }
 </style>
 {#if !!errorMessage}
-  <div class="error" data-testid={"error-field-" + field}>
+  <div class='error' data-testid={'error-field-' + field}>
     {errorMessage}
   </div>
 {/if}
