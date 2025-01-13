@@ -18,3 +18,9 @@ Este ejemplo muestra
 ### Errores de sistema
 
 ![demo errores de sistema](./videos/demoErrorSistema.gif)
+
+## TODO (Cosas que faltan)
+
+- Agregar explicación README
+- Agregar test e2e en local
+- Que funcione test e2e en CI para lo cual hay que reapuntar a host.docker.internal en lugar de localhost (podemos reemplazar como hacía angular porque el manejo de variables de entorno en Svelte te fuerza a que uses server side)
