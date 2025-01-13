@@ -1,38 +1,20 @@
-# sv
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## Tareas de un equipo de desarrollo
 
-## Creating a project
+![demo](./videos/demo.gif)
 
-If you're seeing this, you've probably already done this step. Congrats!
+[![Build](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml)
 
-```bash
-# create a new project in the current directory
-npx sv create
+Este ejemplo muestra
 
-# create a new project in my-app
-npx sv create my-app
-```
+- la interacción con un backend, incluyendo el manejo de errores
+- cómo se modela un formulario con validaciones
+- la navegación de una página principal a una donde se toma información del backend
 
-## Developing
+### Errores de negocio
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+![demo errores de negocio](./videos/demoErrorNegocio.gif)
 
-```bash
-npm run dev
+### Errores de sistema
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+![demo errores de sistema](./videos/demoErrorSistema.gif)
