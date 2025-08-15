@@ -16,7 +16,7 @@
     try {
       tarea.cumplir()
       await tareaService.actualizarTarea(tarea)
-      buscarTareas()
+      await buscarTareas()
     } catch (error: unknown) {
       showError('Error al cumplir la tarea', error)
     }
@@ -54,13 +54,13 @@
   {#each tareas as tarea}
     <div class="row">
       <div class="column">
-        <span class="title">{tarea.descripcion}</span>
-        <span class="description"
+        <span class="title" data-testid={'title_' + tarea.id}>{tarea.descripcion}</span>
+        <span class="description" data-testid={'description_' + tarea.id}
           >{tarea.asignatario?.nombre ?? '⚪ Sin asignar'} - {tarea.fechaString}</span
         >
       </div>
       <div>
-        <div class="porcentaje">
+        <div class="porcentaje" data-testid={'porcentaje_' + tarea.id}>
           {tarea.estaCumplida()
             ? '✅'
             : (tarea.cumplioMenosDe(50) ? '⌛ ' : '') + tarea.porcentajeCumplimiento + ' %'}
@@ -72,9 +72,10 @@
             onclick={() => cumplir(tarea)}
             class="secondary"
             title="Cumplir tarea"
-            aria-label="Editar tarea"
+            aria-label="Cumplir tarea"
+            data-testid={'cumplir_' + tarea.id}
           >
-            <img src="finish.png" class="icon" aria-label="Cumplir tarea" alt="Cumplir tarea" />
+            <img src="finish.png" class="icon" aria-label="Cumplir tarea ícono" alt="Cumplir tarea" />
           </button>
         {/if}
         <button
@@ -83,7 +84,7 @@
           title="Editar tarea"
           aria-label="Editar tarea"
         >
-          <img src="edit.png" class="icon" aria-label="Editar tarea" alt="Editar tarea" />
+          <img src="edit.png" class="icon" aria-label="Editar tarea ícono" alt="Editar tarea" />
         </button>
         <button
           onclick={() => eliminar(tarea)}

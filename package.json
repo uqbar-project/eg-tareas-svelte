@@ -12,8 +12,9 @@
 		"lint": "eslint src",
 		"lint:fix": "eslint src --fix",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run && npm run test:e2e",
+		"test": "npm run test:unit -- --run",
 		"test:e2e": "playwright test --ui",
+		"test:all": "npm run test:unit -- --run && npm run test:e2e",
 		"test:ci": "npm run test:unit -- --run --coverage && playwright test"
 	},
 	"devDependencies": {
