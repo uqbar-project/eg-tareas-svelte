@@ -12,7 +12,7 @@ Object.assign(globalThis as any, {
   __SVELTEKIT_PAYLOAD__: { data: {} }
 })
 
-// mocks útiles en todo el suite
+// Mock general para navegación entre páginas
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }))
 
 afterEach(() => {

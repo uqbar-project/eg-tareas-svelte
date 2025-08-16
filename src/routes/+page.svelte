@@ -28,8 +28,13 @@
   }
 
   const eliminar = async (tarea: Tarea) => {
-    await tareaService.eliminarTarea(tarea)
-    buscarTareas()
+    try {
+      await tareaService.eliminarTarea(tarea)
+      buscarTareas()
+    } catch (error: unknown) {
+      showError('Error al eliminar la tarea', error)
+      await buscarTareas()
+    }
   }
 
   const crearTarea = () => {
@@ -43,7 +48,7 @@
   <span>
     <b>Tareas:</b> {tareas.length}
   </span>
-  <button onclick={crearTarea} class="crear-tarea">➕ Crear tarea</button>
+  <button onclick={crearTarea} class="crear-tarea" data-testid="crear_tarea">➕ Crear tarea</button>
 </div>
 
 <div class="tareas-table">
@@ -85,7 +90,7 @@
           title="Editar tarea"
           aria-label="Editar tarea"
         >
-          <img src="edit.png" class="icon" aria-label="Editar tarea ícono" alt="Editar tarea" />
+          <img src="edit.png" class="icon" aria-label="Editar tarea ícono" alt="Editar tarea" data-testid={'editar_tarea_' + tarea.id}/>
         </button>
         <button
           onclick={() => eliminar(tarea)}

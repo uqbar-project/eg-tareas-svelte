@@ -11,6 +11,7 @@ vi.mock('$lib/domain/errorHandler', () => ({
 }))
 
 import { showError } from '$lib/domain/errorHandler'
+import { goto } from '$app/navigation'
 
 const mockTareas: TareaJSON[] = [
   {
@@ -119,6 +120,39 @@ describe('Página principal de tareas', () => {
       await waitFor(() => {
         expect(queryByTestId('title_3')).toBeNull()
       })
+    })
+
+    it('al eliminar la tarea si falla debe mostrar el mensaje de error', async () => {
+      vi.mocked(axios.get)
+        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
+        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
+      vi.mocked(axios.delete).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
+      const { getByTestId } = render(Page)
+      
+      const user = userEvent.setup()
+      const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
+      await user.click(botonCumplir)
+      await waitFor(() => {
+        expect(showError).toHaveBeenCalledWith('Error al eliminar la tarea', expect.anything())
+      })
+    })
+
+    it('al crear una tarea debe navegar a la página de creación', async () => { 
+      const { getByTestId } = render(Page)
+
+      const user = userEvent.setup()
+      const botonCrear = await waitFor(() => getByTestId('crear_tarea'))
+      await user.click(botonCrear)
+      expect(vi.mocked(goto)).toHaveBeenCalledWith('/tarea/nueva')
+    })
+
+    it('al editar una tarea debe navegar a la página de edición', async () => { 
+      const { getByTestId } = render(Page)
+
+      const user = userEvent.setup()
+      const botonCrear = await waitFor(() => getByTestId('editar_tarea_3'))
+      await user.click(botonCrear)
+      expect(vi.mocked(goto)).toHaveBeenCalledWith('/tarea/3')
     })
   })
 })
