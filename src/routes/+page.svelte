@@ -19,6 +19,7 @@
       await buscarTareas()
     } catch (error: unknown) {
       showError('Error al cumplir la tarea', error)
+      await buscarTareas()
     }
   }
 
@@ -91,6 +92,7 @@
           class="secondary"
           title="Eliminar tarea"
           aria-label="Eliminar tarea"
+          data-testid={'eliminar_' + tarea.id}
         >
           <img
             src="delete-button.svg"

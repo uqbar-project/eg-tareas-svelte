@@ -10,6 +10,8 @@ vi.mock('$lib/domain/errorHandler', () => ({
   showError: vi.fn()
 }))
 
+import { showError } from '$lib/domain/errorHandler'
+
 const mockTareas: TareaJSON[] = [
   {
     id: 1,
@@ -40,11 +42,10 @@ describe('Página principal de tareas', () => {
   describe('Carga de tareas', () => {
     beforeEach(() => {
       vi.mocked(axios.get).mockResolvedValue({ data: mockTareas, status: 200 })
+      vi.mocked(showError).mockClear()
     })
 
     it('debería renderizar la descripción de la lista de tareas', async () => {
-      // Mockeamos la respuesta de axios, no hace falta devolver una promesa cumplida
-
       const { getByTestId } = render(Page)
 
       await waitFor(() => {
@@ -86,6 +87,37 @@ describe('Página principal de tareas', () => {
       await user.click(botonCumplir)
       await waitFor(() => {
         expect(getByTestId('porcentaje_3').textContent).toBe('✅')
+      })
+    })
+
+    it('al cumplir la tarea si falla debe mostrar el mensaje de error', async () => {
+      vi.mocked(axios.get)
+        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
+        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
+      vi.mocked(axios.put).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
+      const { getByTestId } = render(Page)
+      
+      const user = userEvent.setup()
+      const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
+      await user.click(botonCumplir)
+      await waitFor(() => {
+        expect(getByTestId('porcentaje_3').textContent).toBe('51 %')
+        expect(showError).toHaveBeenCalledWith('Error al cumplir la tarea', expect.anything())
+      })
+    })
+
+    it('al eliminar la tarea debe desaparecer de la lista', async () => {
+      vi.mocked(axios.get)
+        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
+        .mockResolvedValueOnce({ data: [{ ...mockTareas[0] }, { ...mockTareas[1] }], status: 200 })
+      vi.mocked(axios.delete).mockResolvedValue({ data: mockTareas[2], status: 200 })
+      const { getByTestId, queryByTestId } = render(Page)
+      
+      const user = userEvent.setup()
+      const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
+      await user.click(botonCumplir)
+      await waitFor(() => {
+        expect(queryByTestId('title_3')).toBeNull()
       })
     })
   })

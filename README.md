@@ -3,7 +3,7 @@
 
 ![demo](./videos/demo.gif)
 
-[![Build](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml)
+[![Build](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-tareas-svelte/branch/master/graph/badge.svg?token=5J8fFm1oEE)](https://codecov.io/gh/uqbar-project/eg-tareas-svelte)
 
 Este ejemplo muestra
 
