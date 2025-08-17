@@ -40,23 +40,23 @@
 </script>
 
 
-<h1>{nuevaTarea ? 'Crear' : 'Editar'} Tarea</h1>
+<h1 data-testid="titulo">{nuevaTarea ? 'Crear' : 'Editar'} Tarea</h1>
 <hr>
 <div class="row-edit">
   <label for="descripcion">Descripción:</label>
-  <input type="text" name="descripcion" bind:value={tareaEdit.descripcion} />
+  <input type="text" name="descripcion" data-testid="descripcion" bind:value={tareaEdit.descripcion} />
   <span></span>
   <ValidationField errors={errors} field="descripcion"/>
 </div>
 <div class="row-edit">
   <label for="iteracion">Iteración:</label>
-  <input type="text" name="iteracion" bind:value={tareaEdit.iteracion} />
+  <input type="text" name="iteracion" data-testid="iteracion" bind:value={tareaEdit.iteracion} />
   <span></span>
   <ValidationField errors={errors} field="iteracion"/>
 </div>
 <div class="row-edit">
   <label for="asignatario">Asignatario:</label>
-  <select bind:value={tareaEdit.asignadoA}>
+  <select bind:value={tareaEdit.asignadoA} data-testid="asignatario">
     <option value="">-- Seleccione un Asignatario --</option>
     {#each asignatarios as asignatario}
       <option value={asignatario.nombre}>{asignatario.nombre}</option>
@@ -67,17 +67,17 @@
 </div>
 <div class="row-edit">
   <label for="fecha">Fecha:</label>
-  <input type="date" name="fecha" bind:value={fecha} />
+  <input type="date" name="fecha" data-testid="fecha" bind:value={fecha} />
   <span></span>
   <ValidationField errors={errors} field="fecha"/>
 </div>
 <div class="row-edit">
   <label for="porcentaje">% cumplimiento:</label>
-  <input type="number" name="porcentaje" bind:value={tareaEdit.porcentajeCumplimiento} />
+  <input type="number" name="porcentaje" bind:value={tareaEdit.porcentajeCumplimiento} data-testid="porcentajeCumplimiento" />
   <span></span>
   <ValidationField errors={errors} field="porcentajeCumplimiento"/>
 </div>
 <div class="button-group-edit">
-  <button onclick={actualizar} class="primary-edit">{nuevaTarea ? 'Crear' : 'Actualizar'}</button>
-  <button onclick={volver} class="secondary-edit">Volver</button>
+  <button onclick={actualizar} class="primary-edit" data-testid="guardar">{nuevaTarea ? 'Crear' : 'Actualizar'}</button>
+  <button onclick={volver} class="secondary-edit" data-testid="volver">Volver</button>
 </div>

@@ -12,6 +12,21 @@ Object.assign(globalThis as any, {
   __SVELTEKIT_PAYLOAD__: { data: {} }
 })
 
+/* Esta definición la necesitamos para los toasts */
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecado, pero algunas libs lo usan
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+})
+
 // Mock general para navegación entre páginas
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }))
 
