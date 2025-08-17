@@ -13,7 +13,6 @@
 
   let { data } = $props()
   const { tarea, asignatarios, nuevaTarea } = data
-  if (!tarea) volver()
 
   let errors: ValidationMessage[] = $state([])
 
@@ -24,10 +23,12 @@
       tareaActual.validar()
       errors = tareaActual.errors
       if (!tareaActual.invalid()) {
-        if (nuevaTarea)
+        if (nuevaTarea) {
           await tareaService.crearTarea(tareaActual)
-        else
+        }
+        else {
           await tareaService.actualizarTarea(tareaActual)
+        }
         volver()
       }
     } catch (error) {
@@ -35,8 +36,8 @@
     }
   }
   
-  let tareaEdit = $state(tarea!.toJSON())
-  let fecha = $state(DateTime.fromJSDate(tarea!.fecha!).toUTC().toFormat('yyyy-MM-dd'))
+  let tareaEdit = $state(tarea.toJSON())
+  let fecha = $state(DateTime.fromJSDate(tarea.fecha!).toUTC().toFormat('yyyy-MM-dd'))
 </script>
 
 

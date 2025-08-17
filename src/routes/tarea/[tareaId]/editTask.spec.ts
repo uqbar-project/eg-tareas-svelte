@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render } from '@testing-library/svelte'
+import { render, waitFor } from '@testing-library/svelte'
 import Page from './+page.svelte'
 import { Tarea } from '$lib/domain/tarea'
 import userEvent from '@testing-library/user-event'
@@ -9,9 +9,13 @@ import { goto } from '$app/navigation'
 import { Usuario } from '$lib/domain/usuario'
 import { REST_SERVER_URL } from '$lib/services/configuration'
 import { tick } from 'svelte'
-import { get } from 'svelte/store'
 
 vi.mock('axios')
+vi.mock('$lib/domain/errorHandler', () => ({
+  showError: vi.fn()
+}))
+
+import { showError } from '$lib/domain/errorHandler'
 
 describe('Crear una nueva tarea', () => {
   it('al iniciar la página debe mostrar una tarea en blanco y las acciones correspondientes', async () => { 
@@ -216,6 +220,33 @@ describe('Actualizar una nueva tarea', () => {
     })
   })
 
-  // TODO: testear que si la tarea no se encuentra, se redirija a la página principal
-  // TODO 2: si da error el service debe catchear el error y mostrar un mensaje al usuario
+  it('si la tarea falla al actualizar debe mostrar un mensaje de error', async () => {
+    const asignatario = new Usuario('Fernando')
+    const tarea = Object.assign(new Tarea(), { id: 5, porcentajeCumplimiento: 50, descripcion: 'Tarea de prueba', iteracion: '1', fecha: new Date('2025-02-03'), asignatario })
+    vi.mocked(axios.put).mockRejectedValue({ data: tarea, status: 500 })
+    const { getByTestId } = render(Page, {
+      props: {
+        data: {
+          tarea,
+          asignatarios: [asignatario, new Usuario('Beatriz')],
+          nuevaTarea: false,
+        },
+      }
+    })
+
+    const inputDescripcion = getByTestId('descripcion') as HTMLInputElement
+    await userEvent.clear(inputDescripcion)
+    await userEvent.type(inputDescripcion, 'Tarea modificada de prueba')
+
+    // forzamos a que se procesen los cambios
+    await tick()
+
+    const botonGuardar = getByTestId('guardar')
+    await userEvent.click(botonGuardar)
+
+    await waitFor(() => {
+      expect(showError).toHaveBeenCalledWith('Error al actualizar la tarea', expect.anything())
+    })
+  })
+
 })

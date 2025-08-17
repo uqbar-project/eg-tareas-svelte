@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitest/config'
 import { svelteTesting } from '@testing-library/svelte/vite'
 import { sveltekit } from '@sveltejs/kit/vite'
-import type { PluginOption } from 'vite'
 
 export default defineConfig({
-  plugins: [sveltekit(), svelteTesting()] as PluginOption[],
+  // TODO: analizar qué pasa con los tipos acá
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  plugins: [sveltekit(), svelteTesting()] as any,
 
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],
