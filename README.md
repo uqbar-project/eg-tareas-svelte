@@ -71,7 +71,7 @@ export const getAxiosData = async <T>(query: () => Promise<AxiosResponse<T>>): P
 
 ![demo errores de sistema](./videos/demoErrorSistema.gif)
 
-### Manejo de error
+### Manejo de errores
 
 En nuestra aplicación cada llamada al backend se encierra en un bloque try/catch, en el **componente Svelte** que es quien sabe tratar los errores: no es el service que solo debe rechazar la promesa. Cuando recibimos un error es importante diferenciar
 
@@ -139,7 +139,7 @@ export async function load({ params }) {
 }
 ```
 
-Un detalle adicional es que la tarea que pasamos como props garantiza no ser undefined, en caso contrario disparamos un redirect hacia la página principal (podés testear qué sucede si hacemos `localhsot:5173/tarea/271578230`)
+Un detalle adicional es que la tarea que pasamos como props garantiza no ser undefined, en caso contrario disparamos un redirect hacia la página principal (podés testear qué sucede si hacemos `localhost:5173/tarea/271578230`)
 
 ## Tests
 
@@ -225,6 +225,15 @@ Otro test interesante es el que simula errores del backend. Aquí
 - lo que estamos haciendo es un test de expectativa sobre la función showError. El primer parámetro es el mensaje de error, lo chequeamos. El segundo tiene detalles de estilos (background-color, color, padding, etc.), no nos interesa verificarlo, porque queremos que nuestros tests sean _resilientes_ ante cambios.
 
 ```ts
+vi.mock('axios')
+vi.mock('$lib/domain/errorHandler', () => ({
+  showError: vi.fn()
+}))
+
+import { showError } from '$lib/domain/errorHandler'
+
+...
+
 it('si la tarea falla al actualizar debe mostrar un mensaje de error', async () => {
   const asignatario = new Usuario('Fernando')
   const tarea = Object.assign(new Tarea(), { id: 5, porcentajeCumplimiento: 50, descripcion: 'Tarea de prueba', iteracion: '1', fecha: new Date('2025-02-03'), asignatario })
