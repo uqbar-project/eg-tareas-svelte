@@ -19,7 +19,7 @@ import { Usuario } from '$lib/domain/usuario'
 describe('Editar una tarea existente', () => {
   it('para una nueva tarea crea una nueva tarea como parte de la información', async () => {
     vi.mocked(axios.get).mockResolvedValue({ data: mockedAsignatarios, status: 200 })
-    const { tarea, asignatarios, nuevaTarea } = await load({ params: { tareaId: 'nueva' } })
+    const { tarea, asignatarios, nuevaTarea } = await load({ params: { tareaId: 'nueva' } } as unknown as Parameters<typeof load>[0])
     expect(tarea.descripcion).toBe('')
     expect(asignatarios).toEqual([
       new Usuario('Usuario 1'),
@@ -39,7 +39,7 @@ describe('Editar una tarea existente', () => {
     }, status: 200 })
     vi.mocked(axios.get).mockResolvedValueOnce({ data: mockedAsignatarios, status: 200 })
     
-    const { tarea, asignatarios, nuevaTarea } = await load({ params: { tareaId: '1' } })
+    const { tarea, asignatarios, nuevaTarea } = await load({ params: { tareaId: '1' } } as unknown as Parameters<typeof load>[0])
     expect(tarea.descripcion).toBe('Test tarea 1')
     expect(asignatarios).toEqual([
       new Usuario('Usuario 1'),
@@ -51,7 +51,7 @@ describe('Editar una tarea existente', () => {
   
   it('para una tarea inexistente redirige a la página principal', async () => {
     vi.mocked(axios.get).mockRejectedValueOnce({ status: 404, message: 'Task not found' })
-    await expect(load({ params: { tareaId: '999' } })).rejects.toEqual(redirect(302, '/'))
+    await expect(load({ params: { tareaId: '999' } } as unknown as Parameters<typeof load>[0])).rejects.toEqual(redirect(302, '/'))
   })
 
 })
