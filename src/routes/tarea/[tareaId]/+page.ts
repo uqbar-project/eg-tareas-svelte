@@ -4,13 +4,16 @@ import { usuarioService } from '$lib/services/usuarioService'
 import { redirect } from '@sveltejs/kit'
 
 export async function load({ params }) {
-  const nuevaTarea = params.tareaId === 'nueva'
-  const tarea = nuevaTarea ? 
-    new Tarea() :
-    await tareaService.getTareaById(+params.tareaId)
-  const asignatarios = await usuarioService.getAsignatarios()
-
-  if (!tarea) throw redirect(302, '/')
-
-  return { tarea, asignatarios, nuevaTarea }
+  try {
+    const nuevaTarea = params.tareaId === 'nueva'
+    const tarea = nuevaTarea ? 
+      new Tarea() :
+      await tareaService.getTareaById(+params.tareaId)
+    const asignatarios = await usuarioService.getAsignatarios()
+    return { tarea, asignatarios, nuevaTarea }
+  } catch (error: unknown) {
+    // eslint-disable-next-line no-console
+    console.error('Error al cargar la tarea:', error)
+    throw redirect(302, '/')
+  }
 }

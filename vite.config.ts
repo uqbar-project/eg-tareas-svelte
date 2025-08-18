@@ -16,7 +16,8 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov'],
       reportsDirectory: './coverage',
-      include: ['src']
+      include: ['src'],
+      exclude: ['src/routes/+layout.svelte'],
     }
   }
 })

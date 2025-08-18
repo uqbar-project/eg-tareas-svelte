@@ -13,7 +13,7 @@ class TareaService {
   async getTareaById(id: number) {
     const queryById = () => axios.get<TareaJSON>(REST_SERVER_URL + '/tareas/' + id)
     const tareaJson = await getAxiosData(queryById)
-    return tareaJson ? Tarea.fromJson(tareaJson) : undefined
+    return Tarea.fromJson(tareaJson)
   }
 
   async actualizarTarea(tarea: Tarea) {
