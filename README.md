@@ -107,7 +107,10 @@ const cumplir = async (tarea: Tarea) => {
 }
 ```
 
-`showError` está definido en `errorHandler` y es una función que le aplica estilos al mensaje de error. Pueden ver su implementación.
+`showError` está definido en `errorHandler` y es una función que le aplica estilos al mensaje de error. Pueden ver su implementación, así como el toast interno que tiene
+
+- un estado global llamado **store**, que almacena una colección de toasts que se van eliminando después de un cierto tiempo (por defecto duran 3 segundos)
+- y un **ToastContainer**, componente de Svelte que itera sobre los toasts del store y los muestra en la parte superior derecha de la página
 
 ## Validación de errores
 

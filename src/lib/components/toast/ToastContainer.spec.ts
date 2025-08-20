@@ -1,7 +1,19 @@
 import { render } from '@testing-library/svelte'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { toasts } from './toastStore'
 import ToastContainer from '$lib/components/toast/ToastContainer.svelte'
+import { tick } from 'svelte'
+
+// Mockeamos la transición para que no afecte a los tests, en especial el último
+vi.mock('svelte/transition', () => {
+  return {
+    fade: () => ({
+      delay: 0,
+      duration: 0,
+      css: () => ''
+    })
+  }
+})
 
 describe('ToastContainer', () => {
   it('renders no toasts when store is empty', () => {
@@ -31,5 +43,15 @@ describe('ToastContainer', () => {
     expect(container.querySelector('.toast.success')).toBeTruthy()
     expect(container.querySelector('.toast.error')).toBeTruthy()
     expect(container.querySelector('.toast.info')).toBeTruthy()
+  })
+
+  it('is removed after a period of time', async () => {
+    vi.useFakeTimers()
+    toasts.push('Disappearing toast', { type: 'success', duration: 100 })
+    const { queryByText } = render(ToastContainer)
+    await vi.advanceTimersByTimeAsync(100)
+    await tick()
+    expect(queryByText('Disappearing toast')).toBeNull()
+    vi.useRealTimers()
   })
 })
