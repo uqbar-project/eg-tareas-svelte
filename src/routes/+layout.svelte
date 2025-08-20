@@ -1,12 +1,7 @@
-<script>
-  import { SvelteToast } from '@zerodevx/svelte-toast'
-
-  const options = {
-  }
-
-  let { children } = $props()
+<script lang="ts">
+  import ToastContainer from '$lib/components/toast/ToastContainer.svelte'
 </script>
 
-<SvelteToast {options} />
+<slot />
 
-{@render children()}
+<ToastContainer />

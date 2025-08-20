@@ -1,4 +1,4 @@
-import { toast } from '@zerodevx/svelte-toast'
+import { toasts } from '$lib/components/toast/toastStore'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getErrorMessage = (error: any): string => {
@@ -14,13 +14,5 @@ export const getErrorMessage = (error: any): string => {
 export const showError = (operation: string, error: unknown) => {
   // eslint-disable-next-line no-console
   console.info(operation, error)
-  toast.push(`${operation}. ${getErrorMessage(error)}`, {
-    theme: {
-      '--toastBackground': 'darkred',
-      '--toastColor': 'white',
-      '--toastBarBackground': 'lightgray',
-      '--toastWidth': '100%',
-    }
-  })
-
+  toasts.push(`${operation}. ${getErrorMessage(error)}`, { type: 'error' })
 }

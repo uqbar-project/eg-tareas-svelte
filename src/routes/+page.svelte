@@ -16,9 +16,9 @@
     try {
       tarea.cumplir()
       await tareaService.actualizarTarea(tarea)
-      await buscarTareas()
     } catch (error: unknown) {
       showError('Error al cumplir la tarea', error)
+    } finally {
       await buscarTareas()
     }
   }

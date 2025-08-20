@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from 'vitest'
 import { showError } from './errorHandler'
 
-vi.mock('@zerodevx/svelte-toast', () => ({
-  toast: { push: vi.fn() },
+vi.mock('$lib/components/toast/toastStore', () => ({
+  toasts: { push: vi.fn() },
 }))
 
-import { toast } from '@zerodevx/svelte-toast'
+import { toasts } from '$lib/components/toast/toastStore'
 
 describe('errorHandler', () => {
   it('should handle common errors correctly', () => {
     const error = new Error('Error inesperado')
     showError('Error al crear una tarea', error)
 
-    expect(toast.push).toHaveBeenCalledWith('Error al crear una tarea. Error inesperado', expect.any(Object))
+    expect(toasts.push).toHaveBeenCalledWith('Error al crear una tarea. Error inesperado', { type: 'error' })
   })
 
   it('should handle axios 5xx errors correctly', () => {
@@ -25,7 +25,7 @@ describe('errorHandler', () => {
       },
     })
 
-    expect(toast.push).toHaveBeenCalledWith('Error al crear una tarea. Ocurrió un error, consulte al administrador del sistema.', expect.any(Object))
+    expect(toasts.push).toHaveBeenCalledWith('Error al crear una tarea. Ocurrió un error, consulte al administrador del sistema.', { type: 'error' })
   })
 
   it('should handle axios 4xx errors correctly', () => {
@@ -38,12 +38,12 @@ describe('errorHandler', () => {
       },
     })
 
-    expect(toast.push).toHaveBeenCalledWith('Error al crear una tarea. Unexpected server error', expect.any(Object))
+    expect(toasts.push).toHaveBeenCalledWith('Error al crear una tarea. Unexpected server error', { type: 'error' })
   })
 
   it('should handle unknown errors correctly', () => {
     showError('Error al crear una tarea', {})
 
-    expect(toast.push).toHaveBeenCalledWith('Error al crear una tarea. Error desconocido', expect.any(Object))
+    expect(toasts.push).toHaveBeenCalledWith('Error al crear una tarea. Error desconocido', { type: 'error' })
   })
 })

@@ -5,7 +5,7 @@ import { sveltekit } from '@sveltejs/kit/vite'
 export default defineConfig({
   // TODO: analizar qué pasa con los tipos acá
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  plugins: [sveltekit(), svelteTesting()] as any,
+  plugins: [sveltekit(), svelteTesting()],
 
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],
@@ -14,7 +14,7 @@ export default defineConfig({
     setupFiles: ['./vitest-setup.ts'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov'],
+      reporter: ['text', 'lcov', 'html'],
       reportsDirectory: './coverage',
       include: ['src'],
       exclude: ['src/routes/+layout.svelte'],
