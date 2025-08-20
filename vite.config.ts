@@ -3,8 +3,6 @@ import { svelteTesting } from '@testing-library/svelte/vite'
 import { sveltekit } from '@sveltejs/kit/vite'
 
 export default defineConfig({
-  // TODO: analizar qué pasa con los tipos acá
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   plugins: [sveltekit(), svelteTesting()],
 
   test: {
