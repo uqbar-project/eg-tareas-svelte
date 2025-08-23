@@ -79,10 +79,13 @@ describe('Página principal de tareas', () => {
     it('al cumplir la tarea debe dejarla al 100%', async () => {
       vi.mocked(axios.get)
         .mockResolvedValueOnce({ data: mockTareas, status: 200 })
-        .mockResolvedValueOnce({ data: [{ ...mockTareas[0] }, { ...mockTareas[1] }, { ...mockTareas[2], porcentajeCumplimiento: 100 }], status: 200 })
+        .mockResolvedValueOnce({ data: [
+          { ...mockTareas[0] },
+          { ...mockTareas[1] },
+          { ...mockTareas[2], porcentajeCumplimiento: 100 }
+        ], status: 200 })
       vi.mocked(axios.put).mockResolvedValue({ data: mockTareas[2], status: 200 })
-      const { getByTestId } = render(Page)
-      
+      const { getByTestId } = render(Page)      
       const user = userEvent.setup()
       const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
       await user.click(botonCumplir)
@@ -93,7 +96,6 @@ describe('Página principal de tareas', () => {
 
     it('al cumplir la tarea si falla debe mostrar el mensaje de error', async () => {
       vi.mocked(axios.get)
-        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
         .mockResolvedValueOnce({ data: mockTareas, status: 200 })
       vi.mocked(axios.put).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
       const { getByTestId } = render(Page)
@@ -124,7 +126,6 @@ describe('Página principal de tareas', () => {
 
     it('al eliminar la tarea si falla debe mostrar el mensaje de error', async () => {
       vi.mocked(axios.get)
-        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
         .mockResolvedValueOnce({ data: mockTareas, status: 200 })
       vi.mocked(axios.delete).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
       const { getByTestId } = render(Page)

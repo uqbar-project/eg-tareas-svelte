@@ -49,6 +49,7 @@ describe('ToastContainer', () => {
     vi.useFakeTimers()
     toasts.push('Disappearing toast', { type: 'success', duration: 100 })
     const { queryByText } = render(ToastContainer)
+    expect(queryByText('Disappearing toast')).not.toBeNull()
     await vi.advanceTimersByTimeAsync(100)
     await tick()
     expect(queryByText('Disappearing toast')).toBeNull()
