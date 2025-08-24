@@ -4,8 +4,8 @@ test('flujo principal: creamos una tarea, la editamos, la cumplimos y la elimina
   page
 }) => {
   await page.goto('/')
-  // await expect(page.locator('h2')).toBeVisible()
-
+  await page.getByTestId('crear_tarea').click()
+  
   // Probamos la búsqueda disparada por el botón
   // await page.getByTestId('paisBusqueda').fill('ARGENTINA')
   // await page.getByTestId('buscar').click()
