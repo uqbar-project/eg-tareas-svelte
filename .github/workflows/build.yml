@@ -32,11 +32,14 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: Install Playwright Browsers
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Install Playwright browsers
         run: npx playwright install --with-deps
+
       - name: Run tests & linter
         run: |
-          yarn install
           yarn run lint && npm run check
           yarn run test:ci
       - name: Upload coverage reports to Codecov
