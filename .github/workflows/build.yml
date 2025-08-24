@@ -32,8 +32,8 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      # - name: Install Playwright Browsers
-      #   run: npx playwright install --with-deps
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
       - name: Run tests & linter
         run: |
           yarn install
