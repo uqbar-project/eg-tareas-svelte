@@ -1,7 +1,9 @@
 
-## Tareas de un equipo de desarrollo
+# Tareas de un equipo de desarrollo
 
 [![Build](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-tareas-svelte/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-tareas-svelte/branch/master/graph/badge.svg?token=5J8fFm1oEE)](https://codecov.io/gh/uqbar-project/eg-tareas-svelte)
+
+## Demo
 
 ![demo](./videos/demo.gif)
 
@@ -144,7 +146,7 @@ export async function load({ params }) {
 
 Un detalle adicional es que la tarea que pasamos como props garantiza no ser undefined, en caso contrario disparamos un redirect hacia la página principal (podés testear qué sucede si hacemos `localhost:5173/tarea/271578230`)
 
-## Tests
+# Tests
 
 Este ejemplo viene con
 
@@ -152,7 +154,7 @@ Este ejemplo viene con
 - tests de frontend
 - tests e2e
 
-### Tests unitarios
+## Tests unitarios
 
 Tanto tarea como usuario son objetos que tienen comportamiento, por lo que tenemos una buena cobertura de tests, similares a los que vieron en materias anteriores.
 
@@ -165,7 +167,9 @@ src/lib/domain             |     100 |       96 |     100 |     100 |
 
 Podés verlos, tanto para las [tareas](./src/lib/domain/tarea.spec.ts) como para el [error handler](./src/lib/domain/errorHandler.spec.ts).
 
-### Tests de frontend
+## Tests de frontend
+
+### Mocking de Axios en lugar del service
 
 Aquí tenemos algunas cosas interesantes, como por ejemplo el momento de testear la navegación a la página de creación de una tarea. En el caso de la página Svelte, vamos a recibir la tarea nueva como parámetro pero además queremos probar la interacción de toda nuestra UI:
 
@@ -220,6 +224,8 @@ it('si la tarea está ok al hacer click en el botón "Guardar" debe enviarla al 
 })
 ```
 
+### Simulando errores del backend (códigos 4xx)
+
 Otro test interesante es el que simula errores del backend. Aquí
 
 - el mock se hace sobre una promesa rechazada (por eso es `mockRejectedValue` y no `mockResolvedValue`)
@@ -269,44 +275,150 @@ it('si la tarea falla al actualizar debe mostrar un mensaje de error', async () 
 
 También podés chequear el uso de `mockResolvedValueOnce` que es útil cuando tenemos que simular varias llamadas en Axios. Eso lo podés ver en [este test](https://vscode.dev/github/uqbar-project/eg-tareas-svelte/blob/master/src/routes/tasks.spec.ts#L79-L80).
 
-### Tests e2e
+## Tests e2e
 
-1. Tratar de meter el gradlew todo en el mismo script
+### Instalación
 
-```sh
-#!/bin/bash
-set -e
+Los tests e2e necesitan tener levantado tanto el backend como el frontend, entonces tenemos [un script](./scripts/start-backend.sh) que se encarga de
 
-BACKEND_DIR="../eg-tareas-springboot-kotlin"
-BACKEND_PORT=9000
-FRONTEND_DIR="."
-FRONTEND_PORT=5173
+- clonar o traerse los últimos cambios del repositorio de backend
+- levantar el server en el puerto 9000 con gradlew
 
-# 🚀 Levantar backend en background
-(cd "$BACKEND_DIR" && ./gradlew bootRun -Pserver.port=$BACKEND_PORT --no-daemon &) 
-BACKEND_PID=$!
+Además, tenemos un script en el package.json:
 
-# ⏳ Esperar a que backend esté listo
-while ! nc -z localhost $BACKEND_PORT; do
-  sleep 1
-done
-echo "✅ Backend is ready (PID=$BACKEND_PID)"
-
-# 🚀 Levantar frontend en background
-(cd "$FRONTEND_DIR" && npm run dev) &
-FRONTEND_PID=$!
-
-# Esperar a que frontend esté listo (puede ser opcional si Playwright espera)
-sleep 3
-
-# 🧪 Ejecutar tests
-npx playwright test
-
-# 🛑 Limpiar backend y frontend
-kill $BACKEND_PID
-kill $FRONTEND_PID
+```js
+		"test:automated:e2e": "start-server-and-test 'npm run start-backend' http://localhost:9000/health 'npx playwright test'",
 ```
 
-2. Que en lugar de pegarle a health tratemos de usar `/`, eso devuelve un Circular path con `/error` porque trata de mostrar una página con error y vuelve a fallar en loop
-3. Qué pasa si le erramos al data-testid, pasar al modo test e2e manual
-4. Qué pasa si cambiamos "nombre" por "name" en Usuario, se rompe el contrato, el front deja de funcionar, los tests de front pasan, no los e2e, lo cual es bueno.
+La dependencia `start-server-and-test` llama a nuestro script para levantar el backend y espera a que un endpoint `/health` nos devuelva un ok (código http 200). Esa señal es la que dispara la ejecución de los tests de playwright, para lo cual tenemos que haber instalado previamente Playwright en nuestro entorno
+
+```bash
+npx playwright install --with-deps
+```
+
+### Configuración
+
+Hay un solo archivo necesario para configurar Playwright: [playwright.config.ts](./playwright.config.ts), donde definimos por ejemplo la carpeta donde están nuestros tests end-to-end y el puerto donde levantamos el servidor del frontend.
+
+### Flujo de un test end-to-end
+
+Al contrario de lo que pasa cuando diseñamos un test unitario, el test end-to-end prueba todo un flujo, por lo que vamos a
+
+- iniciar la app
+- crear una tarea
+- luego, al volver, la seleccionamos y modificamos algunos datos de la misma tarea
+- luego, la marcamos como cumplida
+- y por último la eliminamos
+
+En este único test cubrimos prácticamente toda la aplicación.
+
+Como no queremos depender de los datos que tiene el backend a la hora de inicializar (el bootstrap), el test e2e comienza creando un usuario nuevo que es el que usaremos para asignar a la tarea en el paso de edición.
+
+Un último detalle, para poder conocer el id de la tarea interceptamos la llamada a la API en la creación.
+
+Dejamos a continuación el código, donde verán que hay un notable parecido con el framework Testing Library. Cada paso se encadena asincrónicamente con el siguiente:
+
+```ts
+test('flujo principal: creamos una tarea, la editamos, la cumplimos y la eliminamos', async ({
+  page, request
+}) => {
+  // Creamos un usuario
+  const response = await request.post('http://localhost:9000/usuarios', {
+    data: { nombre: 'Eva Dida' }
+  })
+  expect(response.ok()).toBeTruthy()
+
+  // Comenzamos desde la página principal
+  await page.goto('/')
+    
+  // Creamos una tarea
+  await page.getByTestId('crear_tarea').click()
+  await page.goto(`/tarea/nueva`)
+  const tareaId = await editarTarea({
+    descripcion: 'Agregar tests e2e',
+    iteracion: 'Kepler',
+    asignadoA: '',
+    fecha: '2025-11-25',
+    porcentajeCumplimiento: 40,
+  }, page)
+
+  // Volvemos a la página principal
+  await page.goto('/')
+  await expect(page.getByTestId(`row_${tareaId}`)).toBeVisible()
+  await expect(page.getByTestId(`title_${tareaId}`)).toHaveText('Agregar tests e2e')
+  await expect(page.getByTestId(`description_${tareaId}`)).toHaveText('⚪ Sin asignar - 25/11/2025')
+  await expect(page.getByTestId(`porcentaje_${tareaId}`)).toHaveText('⌛ 40 %')
+
+  // Modificamos datos de la tarea
+  await page.getByTestId(`editar_tarea_${tareaId}`).click()
+  await editarTarea({
+    descripcion: 'Agregar tests e2e con Playwright',
+    iteracion: 'Leibnitz',
+    asignadoA: 'Eva Dida',
+    fecha: '2025-11-26',
+    porcentajeCumplimiento: 50,
+  }, page)
+
+  // Volvemos a la página principal
+  await page.goto('/')
+  await expect(page.getByTestId(`row_${tareaId}`)).toBeVisible()
+  await expect(page.getByTestId(`title_${tareaId}`)).toHaveText('Agregar tests e2e con Playwright')
+  await expect(page.getByTestId(`description_${tareaId}`)).toHaveText('Eva Dida - 26/11/2025')
+  await expect(page.getByTestId(`porcentaje_${tareaId}`)).toHaveText('50 %')
+
+  // Cumplimos la tarea
+  await page.getByTestId(`cumplir_${tareaId}`).click()
+  await expect(page.getByTestId(`porcentaje_${tareaId}`)).toHaveText('✅')
+  await expect(page.getByTestId(`cumplir_${tareaId}`)).not.toBeVisible()
+
+  // Eliminamos la tarea
+  await page.getByTestId(`eliminar_${tareaId}`).click()
+  await expect(page.getByTestId(`row_${tareaId}`)).not.toBeVisible()
+})
+
+const editarTarea = async ({
+  descripcion,
+  iteracion,
+  asignadoA,
+  fecha,
+  porcentajeCumplimiento
+}, page: Page) => {
+  await page.getByTestId('descripcion').fill(descripcion)
+  await page.getByTestId('iteracion').fill(iteracion)
+  if (asignadoA) {
+    await page.getByTestId('asignatario').selectOption(asignadoA)
+  }
+  if (fecha) {
+    await page.getByTestId('fecha').fill(fecha)
+  }
+  await page.getByTestId('porcentajeCumplimiento').fill(porcentajeCumplimiento.toString())
+  // escuchamos al backend para obtener el id de la tarea que creamos/editamos
+  const [response] = await Promise.all([
+    page.waitForResponse(backendResponse =>
+      ['POST', 'PUT'].includes(backendResponse.request().method())
+    ),
+    await page.getByTestId('guardar').click()
+  ])
+  const json = await response.json()
+  return json.id
+}
+```
+
+### Debug manual
+
+Si en algún momento el test falla o bien si queremos tener la chance de mirar cómo ejecutan los tests e2e, podemos ejecutar
+
+- primero `yarn run start-backend` para tener el backend listo
+- y luego `yarn run test:manual:e2e` para acceder a la app Playwright
+
+![e2e manual](./images/e2e.png)
+
+### e2e + CI
+
+Para ejecutar los test e2e en el CI necesitamos
+
+- instalar Playwright
+- ejecutar los tests unitarios para sacar la cobertura
+- y por último que se dispare un `test:automated:e2e` que como sabemos levanta el backend y cuando nos de el ok el endpoint `/health` ejecuta los tests de Playwright.
+
+Podés ver la implementación en el archivo [build.yml](./.github/workflows/build.yml).
