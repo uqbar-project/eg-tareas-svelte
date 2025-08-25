@@ -1,4 +1,3 @@
-import type { TareaJSON } from '$lib/domain/tarea'
 import { expect, test, type Page } from '@playwright/test'
 
 test('flujo principal: creamos una tarea, la editamos, la cumplimos y la eliminamos', async ({
@@ -64,7 +63,7 @@ const editarTarea = async ({
   asignadoA,
   fecha,
   porcentajeCumplimiento
-}: TareaJSON, page: Page) => {
+}, page: Page) => {
   await page.getByTestId('descripcion').fill(descripcion)
   await page.getByTestId('iteracion').fill(iteracion)
   if (asignadoA) {

@@ -6,5 +6,5 @@ export default defineConfig({
     port: 4173
   },
 
-  testDir: 'src/e2e'
+  testDir: 'e2e'
 })
