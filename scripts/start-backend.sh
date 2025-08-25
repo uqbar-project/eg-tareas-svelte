@@ -9,6 +9,9 @@ if [ ! -d "$BACKEND_DIR/.git" ]; then
   echo "📥 Cloning repository into $BACKEND_DIR..."
   mkdir -p "$(dirname "$BACKEND_DIR")"
   git clone "$REPO_URL" "$BACKEND_DIR"
+else
+  echo "📡 Pulling latest changes in $BACKEND_DIR..."
+  (cd "$BACKEND_DIR" && git pull && cd ..)
 fi
 
 cd "$BACKEND_DIR"
