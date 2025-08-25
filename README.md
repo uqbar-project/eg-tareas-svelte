@@ -271,6 +271,42 @@ También podés chequear el uso de `mockResolvedValueOnce` que es útil cuando t
 
 ### Tests e2e
 
-TODO
+1. Tratar de meter el gradlew todo en el mismo script
 
-- Que funcione test e2e en CI para lo cual hay que reapuntar a host.docker.internal en lugar de localhost (podemos reemplazar como hacía angular porque el manejo de variables de entorno en Svelte te fuerza a que uses server side)
+```sh
+#!/bin/bash
+set -e
+
+BACKEND_DIR="../eg-tareas-springboot-kotlin"
+BACKEND_PORT=9000
+FRONTEND_DIR="."
+FRONTEND_PORT=5173
+
+# 🚀 Levantar backend en background
+(cd "$BACKEND_DIR" && ./gradlew bootRun -Pserver.port=$BACKEND_PORT --no-daemon &) 
+BACKEND_PID=$!
+
+# ⏳ Esperar a que backend esté listo
+while ! nc -z localhost $BACKEND_PORT; do
+  sleep 1
+done
+echo "✅ Backend is ready (PID=$BACKEND_PID)"
+
+# 🚀 Levantar frontend en background
+(cd "$FRONTEND_DIR" && npm run dev) &
+FRONTEND_PID=$!
+
+# Esperar a que frontend esté listo (puede ser opcional si Playwright espera)
+sleep 3
+
+# 🧪 Ejecutar tests
+npx playwright test
+
+# 🛑 Limpiar backend y frontend
+kill $BACKEND_PID
+kill $FRONTEND_PID
+```
+
+2. Que en lugar de pegarle a health tratemos de usar `/`, eso devuelve un Circular path con `/error` porque trata de mostrar una página con error y vuelve a fallar en loop
+3. Qué pasa si le erramos al data-testid, pasar al modo test e2e manual
+4. Qué pasa si cambiamos "nombre" por "name" en Usuario, se rompe el contrato, el front deja de funcionar, los tests de front pasan, no los e2e, lo cual es bueno.

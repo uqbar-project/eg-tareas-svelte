@@ -58,7 +58,7 @@
     <div>Acciones</div>
   </div>
   {#each tareas as tarea}
-    <div class="row">
+    <div class="row" data-testid={'row_' + tarea.id}>
       <div class="column">
         <span class="title" data-testid={'title_' + tarea.id}>{tarea.descripcion}</span>
         <span class="description" data-testid={'description_' + tarea.id}

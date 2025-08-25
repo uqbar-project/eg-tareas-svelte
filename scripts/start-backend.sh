@@ -13,3 +13,6 @@ fi
 
 cd "$BACKEND_DIR"
 ./gradlew bootRun -Pserver.port=$PORT --no-daemon
+
+# no hay que tratar de levantar en el mismo comando back y front
+# porque se va a quedar colgado una vez que levanta Springboot
