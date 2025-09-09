@@ -86,9 +86,8 @@ describe('Página principal de tareas', () => {
         ], status: 200 })
       vi.mocked(axios.put).mockResolvedValue({ data: mockTareas[2], status: 200 })
       const { getByTestId } = render(Page)      
-      const user = userEvent.setup()
       const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
-      await user.click(botonCumplir)
+      await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(getByTestId('porcentaje_3').textContent).toBe('✅')
       })
@@ -100,9 +99,8 @@ describe('Página principal de tareas', () => {
       vi.mocked(axios.put).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
       const { getByTestId } = render(Page)
       
-      const user = userEvent.setup()
       const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
-      await user.click(botonCumplir)
+      await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(getByTestId('porcentaje_3').textContent).toBe('51 %')
         expect(showError).toHaveBeenCalledWith('Error al cumplir la tarea', expect.anything())
@@ -116,9 +114,8 @@ describe('Página principal de tareas', () => {
       vi.mocked(axios.delete).mockResolvedValue({ data: mockTareas[2], status: 200 })
       const { getByTestId, queryByTestId } = render(Page)
       
-      const user = userEvent.setup()
       const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
-      await user.click(botonCumplir)
+      await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(queryByTestId('title_3')).toBeNull()
       })
@@ -130,9 +127,8 @@ describe('Página principal de tareas', () => {
       vi.mocked(axios.delete).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
       const { getByTestId } = render(Page)
       
-      const user = userEvent.setup()
       const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
-      await user.click(botonCumplir)
+      await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(showError).toHaveBeenCalledWith('Error al eliminar la tarea', expect.anything())
       })
@@ -141,18 +137,16 @@ describe('Página principal de tareas', () => {
     it('al crear una tarea debe navegar a la página de creación', async () => { 
       const { getByTestId } = render(Page)
 
-      const user = userEvent.setup()
       const botonCrear = await waitFor(() => getByTestId('crear_tarea'))
-      await user.click(botonCrear)
+      await userEvent.click(botonCrear)
       expect(vi.mocked(goto)).toHaveBeenCalledWith('/tarea/nueva')
     })
 
     it('al editar una tarea debe navegar a la página de edición', async () => { 
       const { getByTestId } = render(Page)
 
-      const user = userEvent.setup()
       const botonCrear = await waitFor(() => getByTestId('editar_tarea_3'))
-      await user.click(botonCrear)
+      await userEvent.click(botonCrear)
       expect(vi.mocked(goto)).toHaveBeenCalledWith('/tarea/3')
     })
   })
