@@ -59,7 +59,7 @@
   <label for="asignatario">Asignatario:</label>
   <select bind:value={tareaEdit.asignadoA} data-testid="asignatario">
     <option value="">-- Seleccione un Asignatario --</option>
-    {#each asignatarios as asignatario}
+    {#each asignatarios as asignatario (asignatario.nombre)}
       <option value={asignatario.nombre}>{asignatario.nombre}</option>
     {/each}
   </select>
