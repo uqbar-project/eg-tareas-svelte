@@ -4,6 +4,8 @@ import { toasts } from '$lib/components/toast/toastStore'
 export const getErrorMessage = (error: any): string => {
   if (error.response && error.response.data) {
     return error.response.data.status < 500 ? error.response.data.message : 'Ocurrió un error, consulte al administrador del sistema.'
+  } else if (error.code === 'ERR_NETWORK') {
+    return 'Ocurrió un problema de conexión con el servidor. Intente nuevamente más tarde'
   } else if (error.message) {
     return error.message
   } else {
