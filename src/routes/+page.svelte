@@ -15,8 +15,8 @@
     }
   }
 
-  onMount(() => {
-    buscarTareas()
+  onMount(async () => {
+    await buscarTareas()
   })
 
   const cumplir = async (tarea: Tarea) => {
