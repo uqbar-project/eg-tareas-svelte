@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { goto } from '$app/navigation'
-  import { getErrorMessage, showError } from '$lib/domain/errorHandler'
+  import { showError } from '$lib/domain/errorHandler'
   import type { Tarea } from '$lib/domain/tarea'
   import { tareaService } from '$lib/services/tareaService'
   import './main.css'
@@ -15,9 +15,7 @@
     }
   }
 
-  onMount(async () => {
-    await buscarTareas()
-  })
+  onMount(buscarTareas)
 
   const cumplir = async (tarea: Tarea) => {
     try {
