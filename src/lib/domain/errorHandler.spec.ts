@@ -15,6 +15,13 @@ describe('errorHandler', () => {
     expect(toasts.push).toHaveBeenCalledWith('Error al crear una tarea. Error inesperado', { type: 'error' })
   })
 
+  it('should handle axios network connection problem correctly', () => {
+    showError('Error al conectar', {
+      code: 'ERR_NETWORK',
+    })
+    expect(toasts.push).toHaveBeenCalledWith('Error al conectar. Ocurrió un problema de conexión con el servidor. Intente nuevamente más tarde', { type: 'error' })    
+  })
+
   it('should handle axios 5xx errors correctly', () => {
     showError('Error al crear una tarea', {
       response: {

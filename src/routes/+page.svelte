@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { goto } from '$app/navigation'
   import { showError } from '$lib/domain/errorHandler'
   import type { Tarea } from '$lib/domain/tarea'
@@ -7,10 +8,14 @@
 
   let tareas = $state<Tarea[]>([])
   const buscarTareas = async () => {
-    tareas = await tareaService.todasLasTareas()
+    try {
+      tareas = await tareaService.todasLasTareas()
+    } catch (error) {
+      showError('Conexión al servidor', error)
+    }
   }
 
-  buscarTareas()
+  onMount(buscarTareas)
 
   const cumplir = async (tarea: Tarea) => {
     try {
@@ -46,7 +51,8 @@
 
 <div class="resumen">
   <span>
-    <b>Tareas:</b> {tareas.length}
+    <b>Tareas:</b>
+    {tareas.length}
   </span>
   <button onclick={crearTarea} class="crear-tarea" data-testid="crear_tarea">➕ Crear tarea</button>
 </div>
@@ -81,7 +87,12 @@
             aria-label="Cumplir tarea"
             data-testid={'cumplir_' + tarea.id}
           >
-            <img src="finish.png" class="icon" aria-label="Cumplir tarea ícono" alt="Cumplir tarea" />
+            <img
+              src="finish.png"
+              class="icon"
+              aria-label="Cumplir tarea ícono"
+              alt="Cumplir tarea"
+            />
           </button>
         {/if}
         <button
@@ -90,7 +101,13 @@
           title="Editar tarea"
           aria-label="Editar tarea"
         >
-          <img src="edit.png" class="icon" aria-label="Editar tarea ícono" alt="Editar tarea" data-testid={'editar_tarea_' + tarea.id}/>
+          <img
+            src="edit.png"
+            class="icon"
+            aria-label="Editar tarea ícono"
+            alt="Editar tarea"
+            data-testid={'editar_tarea_' + tarea.id}
+          />
         </button>
         <button
           onclick={() => eliminar(tarea)}
