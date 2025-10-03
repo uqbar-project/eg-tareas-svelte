@@ -28,6 +28,11 @@ const mockTareas: () => Tarea[] = ()=> [
   new Tarea(3,'Test tarea 3','Iteración 1',new Usuario('Gabriela'),new Date('2024-06-02'),51)
 ]
 
+const mockInvalidate: (rerender:(props: Partial<PageProps>) => Promise<void>, updatedList: Tarea[] )=>void = (rerender, updatedList) => {
+  vi.mocked(invalidate).mockImplementationOnce(async () => {
+    await rerender({data: {tareas: updatedList},params: {}})
+  })  
+}
 describe('Página principal de tareas', () => {
   describe('Carga de tareas', () => {
     beforeEach(() => {
@@ -67,16 +72,16 @@ describe('Página principal de tareas', () => {
     })
 
     it('al cumplir la tarea debe dejarla al 100%', async () => {
-      const { getByTestId, rerender } = render(Page,defaultData)    
-      const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
-      await userEvent.click(botonCumplir)
+      const { getByTestId, rerender } = render(Page,defaultData)
       const tareas = mockTareas()
       const updated = [
         Object.assign(new Tarea(),tareas[0]),
         Object.assign(new Tarea(),tareas[1]),
         Object.assign(new Tarea(),tareas[2], {porcentajeCumplimiento: 100} )
       ]
-      await rerender({ data: { tareas: updated }, params: {} })
+      mockInvalidate(rerender, updated)
+      const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
+      await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(getByTestId('porcentaje_3').textContent).toBe('✅')
         expect(invalidate).toHaveBeenCalledWith('tareas:list')
@@ -98,15 +103,14 @@ describe('Página principal de tareas', () => {
     it('al eliminar la tarea debe desaparecer de la lista', async () => {
       const tareas = mockTareas()
       vi.mocked(axios.delete).mockResolvedValue({ data: tareas[2], status: 200 })
-      const { getByTestId, queryByTestId, rerender} = render(Page, defaultData)
-      
-      const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
-      await userEvent.click(botonCumplir)
-      const updated = [
+      const { getByTestId, queryByTestId, rerender} = render(Page, defaultData)      
+      const updatedList = [
         Object.assign(new Tarea(),tareas[0]),
         Object.assign(new Tarea(),tareas[1]),
       ]
-      await rerender({ data: { tareas: updated }, params: {} })
+      mockInvalidate(rerender, updatedList)
+      const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
+      await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(queryByTestId('title_3')).toBeNull()
         expect(invalidate).toHaveBeenCalledWith('tareas:list')
