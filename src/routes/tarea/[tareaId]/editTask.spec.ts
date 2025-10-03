@@ -80,8 +80,6 @@ describe('Crear una nueva tarea', () => {
 
   it('si la tarea está ok al hacer click en el botón "Guardar" debe enviarla al backend', async () => {
     const asignatario = new Usuario('Fernando')
-    const tarea = Object.assign(new Tarea(), { porcentajeCumplimiento: 50, descripcion: 'Tarea de prueba', iteracion: '1', fecha: new Date('2025-02-03'), asignatario })
-    vi.mocked(axios.post).mockResolvedValue({ data: tarea, status: 200 })
     const { getByTestId } = render(Page, {
       props: {
         data: {
@@ -190,7 +188,6 @@ describe('Actualizar una nueva tarea', () => {
   it('si la tarea está ok al hacer click en el botón "Guardar" debe enviarla al backend', async () => {
     const asignatario = new Usuario('Fernando')
     const tarea = Object.assign(new Tarea(), { id: 5, porcentajeCumplimiento: 50, descripcion: 'Tarea de prueba', iteracion: '1', fecha: new Date('2025-02-03'), asignatario })
-    vi.mocked(axios.put).mockResolvedValue({ data: tarea, status: 200 })
     const { getByTestId } = render(Page, {
       props: {
         data: {
