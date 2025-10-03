@@ -106,6 +106,7 @@ describe('Página principal de tareas', () => {
       await rerender({ data: { tareas: updated }, params: {} })
       await waitFor(() => {
         expect(queryByTestId('title_3')).toBeNull()
+        expect(invalidate).toHaveBeenCalledWith('tareas:list')
       })
     })
 
