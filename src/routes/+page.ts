@@ -1,9 +1,7 @@
 import { showError } from '$lib/domain/errorHandler'
 import { tareaService } from '$lib/services/tareaService'
-import type { PageLoad } from './$types'
 
-
-export const load: PageLoad = async ({ depends }) => {
+export const load = async ({ depends }) => {
   try{
     depends('tareas:list') 
     const tareas = await tareaService.todasLasTareas()
