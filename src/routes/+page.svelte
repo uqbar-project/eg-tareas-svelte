@@ -1,21 +1,18 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { goto } from '$app/navigation'
   import { showError } from '$lib/domain/errorHandler'
   import type { Tarea } from '$lib/domain/tarea'
   import { tareaService } from '$lib/services/tareaService'
   import './main.css'
+  import type { PageProps } from './$types'
+  import { invalidate } from '$app/navigation'
 
-  let tareas = $state<Tarea[]>([])
+  let { data }: PageProps = $props()
+  let tareas = $derived(data.tareas)
+
   const buscarTareas = async () => {
-    try {
-      tareas = await tareaService.todasLasTareas()
-    } catch (error) {
-      showError('Conexión al servidor', error)
-    }
+    await invalidate('tareas:list')
   }
-
-  onMount(buscarTareas)
 
   const cumplir = async (tarea: Tarea) => {
     try {
