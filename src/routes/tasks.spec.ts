@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, waitFor } from '@testing-library/svelte'
+import { render, waitFor, type SvelteComponentOptions } from '@testing-library/svelte'
 import Page from './+page.svelte'
-import type { TareaJSON } from '$lib/domain/tarea'
+import { Tarea } from '$lib/domain/tarea'
 import axios from 'axios'
 import userEvent from '@testing-library/user-event'
 
@@ -9,45 +9,40 @@ vi.mock('axios')
 vi.mock('$lib/domain/errorHandler', () => ({
   showError: vi.fn()
 }))
+vi.mock('$app/navigation', () => ({
+  goto: vi.fn(),
+  invalidate: vi.fn().mockResolvedValue(true)
+}))
 
+import { invalidate, goto } from '$app/navigation'
 import { showError } from '$lib/domain/errorHandler'
-import { goto } from '$app/navigation'
+import { Usuario } from '$lib/domain/usuario'
+import type { Component } from 'svelte'
+import type { PageProps } from './$types'
 
-const mockTareas: TareaJSON[] = [
-  {
-    id: 1,
-    descripcion: 'Test tarea 1',
-    asignadoA: 'Marcelo',
-    fecha: '01/06/2024',
-    porcentajeCumplimiento: 100,
-    iteracion: 'Iteración 1',
-  },
-  {
-    id: 2,
-    descripcion: 'Test tarea 2',
-    fecha: '02/06/2024',
-    porcentajeCumplimiento: 30,
-    iteracion: 'Iteración 2',
-  },
-  {
-    id: 3,
-    descripcion: 'Test tarea 3',
-    fecha: '02/06/2024',
-    porcentajeCumplimiento: 51,
-    asignadoA: 'Gabriela',
-    iteracion: 'Iteración 1',
-  }
+
+let defaultData: SvelteComponentOptions<Component<PageProps>>
+const mockTareas: () => Tarea[] = ()=> [
+  new Tarea(1,'Test tarea 1','Iteración 1',new Usuario('Marcelo'),new Date('2024-06-01'),100),
+  new Tarea(2,'Test tarea 2','Iteración 2',undefined,new Date('2024-06-02'),30),
+  new Tarea(3,'Test tarea 3','Iteración 1',new Usuario('Gabriela'),new Date('2024-06-02'),51)
 ]
 
+const mockInvalidate: (rerender:(props: Partial<PageProps>) => Promise<void>, updatedList: Tarea[] )=>void = (rerender, updatedList) => {
+  vi.mocked(invalidate).mockImplementationOnce(async () => {
+    await rerender({data: {tareas: updatedList},params: {}})
+  })  
+}
 describe('Página principal de tareas', () => {
   describe('Carga de tareas', () => {
     beforeEach(() => {
-      vi.mocked(axios.get).mockResolvedValue({ data: mockTareas, status: 200 })
-      vi.mocked(showError).mockClear()
+      vi.clearAllMocks()
+    
+      defaultData = { data: { tareas: mockTareas() }, params: {} }
     })
 
     it('debería renderizar la descripción de la lista de tareas', async () => {
-      const { getByTestId } = render(Page)
+      const { getByTestId } = render(Page,defaultData)
 
       await waitFor(() => {
         expect(getByTestId('title_1').textContent).toBe('Test tarea 1')
@@ -57,7 +52,7 @@ describe('Página principal de tareas', () => {
     })
 
     it('debería renderizar el nombre del asignado a la tarea', async () => {
-      const { getByTestId } = render(Page)
+      const { getByTestId } = render(Page,defaultData)
 
       await waitFor(() => {
         expect(getByTestId('description_1').textContent).toBe('Marcelo - 01/06/2024')
@@ -67,7 +62,7 @@ describe('Página principal de tareas', () => {
     })
 
     it('debería renderizar el nombre del asignado a la tarea', async () => {
-      const { getByTestId } = render(Page)
+      const { getByTestId } = render(Page,defaultData)
 
       await waitFor(() => {
         expect(getByTestId('porcentaje_1').textContent).toBe('✅')
@@ -77,27 +72,25 @@ describe('Página principal de tareas', () => {
     })
 
     it('al cumplir la tarea debe dejarla al 100%', async () => {
-      vi.mocked(axios.get)
-        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
-        .mockResolvedValueOnce({ data: [
-          { ...mockTareas[0] },
-          { ...mockTareas[1] },
-          { ...mockTareas[2], porcentajeCumplimiento: 100 }
-        ], status: 200 })
-      vi.mocked(axios.put).mockResolvedValue({ data: mockTareas[2], status: 200 })
-      const { getByTestId } = render(Page)      
+      const { getByTestId, rerender } = render(Page,defaultData)
+      const tareas = mockTareas()
+      const updated = [
+        Object.assign(new Tarea(),tareas[0]),
+        Object.assign(new Tarea(),tareas[1]),
+        Object.assign(new Tarea(),tareas[2], {porcentajeCumplimiento: 100} )
+      ]
+      mockInvalidate(rerender, updated)
       const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
       await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(getByTestId('porcentaje_3').textContent).toBe('✅')
+        expect(invalidate).toHaveBeenCalledWith('tareas:list')
       })
     })
 
     it('al cumplir la tarea si falla debe mostrar el mensaje de error', async () => {
-      vi.mocked(axios.get)
-        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
       vi.mocked(axios.put).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
-      const { getByTestId } = render(Page)
+      const { getByTestId } = render(Page,defaultData)
       
       const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
       await userEvent.click(botonCumplir)
@@ -108,24 +101,25 @@ describe('Página principal de tareas', () => {
     })
 
     it('al eliminar la tarea debe desaparecer de la lista', async () => {
-      vi.mocked(axios.get)
-        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
-        .mockResolvedValueOnce({ data: [{ ...mockTareas[0] }, { ...mockTareas[1] }], status: 200 })
-      vi.mocked(axios.delete).mockResolvedValue({ data: mockTareas[2], status: 200 })
-      const { getByTestId, queryByTestId } = render(Page)
-      
+      const tareas = mockTareas()
+      vi.mocked(axios.delete).mockResolvedValue({ data: tareas[2], status: 200 })
+      const { getByTestId, queryByTestId, rerender} = render(Page, defaultData)      
+      const updatedList = [
+        Object.assign(new Tarea(),tareas[0]),
+        Object.assign(new Tarea(),tareas[1]),
+      ]
+      mockInvalidate(rerender, updatedList)
       const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
       await userEvent.click(botonCumplir)
       await waitFor(() => {
         expect(queryByTestId('title_3')).toBeNull()
+        expect(invalidate).toHaveBeenCalledWith('tareas:list')
       })
     })
 
     it('al eliminar la tarea si falla debe mostrar el mensaje de error', async () => {
-      vi.mocked(axios.get)
-        .mockResolvedValueOnce({ data: mockTareas, status: 200 })
       vi.mocked(axios.delete).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
-      const { getByTestId } = render(Page)
+      const { getByTestId } = render(Page, defaultData)
       
       const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))
       await userEvent.click(botonCumplir)
@@ -135,7 +129,7 @@ describe('Página principal de tareas', () => {
     })
 
     it('al crear una tarea debe navegar a la página de creación', async () => { 
-      const { getByTestId } = render(Page)
+      const { getByTestId } = render(Page, defaultData)
 
       const botonCrear = await waitFor(() => getByTestId('crear_tarea'))
       await userEvent.click(botonCrear)
@@ -143,7 +137,7 @@ describe('Página principal de tareas', () => {
     })
 
     it('al editar una tarea debe navegar a la página de edición', async () => { 
-      const { getByTestId } = render(Page)
+      const { getByTestId } = render(Page, defaultData)
 
       const botonCrear = await waitFor(() => getByTestId('editar_tarea_3'))
       await userEvent.click(botonCrear)
