@@ -13,7 +13,7 @@ Este ejemplo muestra
 - cómo se modela un formulario con validaciones
 - la navegación de una página principal a una donde se toma información del backend
 
-## Llamadas a un backend
+## Búsqueda de tareas - variante simple
 
 Para buscar las tareas, los usuarios y para enviar las actualizaciones, el backend sirve como fuente de verdad (single source of truth) entre sesiones. Por ejemplo, para buscar todas las tareas disponibles, hacemos un llamado a un web server mediante una API REST, a un método GET de http que nos devuelve un JSON. Como sabemos que es una operación que puede tardar y no podemos bloquear el thread del event loop, la trabajamos en forma asincrónica. En el componente Svelte hacemos:
 
@@ -61,6 +61,39 @@ export const getAxiosData = async <T>(query: () => Promise<AxiosResponse<T>>): P
   }
   return response.data
 }
+```
+
+## Búsqueda de tareas - variante con renderizado
+
+La opción que te dejamos en este repo incluye una separación en
+
+- `+page.ts`, donde mediante CSR hacemos la llamada para obtener la lista de tareas...
+- y la página Svelte que recibe como props esa lista de tareas
+
+Vemos la implementación de `+page.ts`:
+
+```ts
+export const load = async ({ depends }) => {
+  try{
+    depends('tareas:list') 
+    const tareas = await tareaService.todasLasTareas()
+    return { tareas }
+  } catch (error){
+    showError('Conexión al servidor', error)
+    return { tareas: [] }
+  }
+}
+```
+
+Agregamos una dependencia con la clave `tareas:list`, de esa manera la página Svelte puede informar a su contraparte Typescript que necesita sincronizar nuevamente la lista de tareas mediante la función `invalidate`. Vemos cómo queda la página principal de Svelte:
+
+```ts
+  let { data }: PageProps = $props()
+  let tareas = $derived(data.tareas)
+
+  const buscarTareas = async () => {
+    await invalidate('tareas:list')
+  }
 ```
 
 ## Errores
