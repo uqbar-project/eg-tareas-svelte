@@ -19,7 +19,7 @@ describe('getAxiosData', () => {
   })
 
   it('should throw an exception when status != 200', async () => {
-    await expect(getAxiosData<UsuarioJSON>(() => Promise.resolve({
+    await expect(getAxiosData<UsuarioJSON>(() => Promise.reject({
       status: 400,
       message: 'You should pass a non-empty string',
     } as unknown as AxiosResponse))).rejects.toThrow('You should pass a non-empty string')
