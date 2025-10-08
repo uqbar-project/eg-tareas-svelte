@@ -32,6 +32,8 @@ export default [
       'no-cond-assign': ['error', 'always'],
       'no-console': 'error',
       '@typescript-eslint/sort-type-constituents': 'error',
+      'space-before-blocks': ['error', 'always'],
+      'comma-spacing': ['error', { before: false, after: true }],
     },
   },
   {

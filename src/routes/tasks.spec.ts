@@ -23,14 +23,14 @@ import type { PageProps } from './$types'
 
 let defaultData: SvelteComponentOptions<Component<PageProps>>
 const mockTareas: () => Tarea[] = ()=> [
-  new Tarea(1,'Test tarea 1','Iteración 1',new Usuario('Marcelo'),new Date('2024-06-01'),100),
-  new Tarea(2,'Test tarea 2','Iteración 2',undefined,new Date('2024-06-02'),30),
-  new Tarea(3,'Test tarea 3','Iteración 1',new Usuario('Gabriela'),new Date('2024-06-02'),51)
+  new Tarea(1, 'Test tarea 1', 'Iteración 1', new Usuario('Marcelo'), new Date('2024-06-01'), 100),
+  new Tarea(2, 'Test tarea 2', 'Iteración 2', undefined, new Date('2024-06-02'), 30),
+  new Tarea(3, 'Test tarea 3', 'Iteración 1', new Usuario('Gabriela'), new Date('2024-06-02'), 51)
 ]
 
 const mockInvalidate: (rerender:(props: Partial<PageProps>) => Promise<void>, updatedList: Tarea[] )=>void = (rerender, updatedList) => {
   vi.mocked(invalidate).mockImplementationOnce(async () => {
-    await rerender({data: {tareas: updatedList},params: {}})
+    await rerender({data: {tareas: updatedList}, params: {}})
   })  
 }
 describe('Página principal de tareas', () => {
@@ -42,7 +42,7 @@ describe('Página principal de tareas', () => {
     })
 
     it('debería renderizar la descripción de la lista de tareas', async () => {
-      const { getByTestId } = render(Page,defaultData)
+      const { getByTestId } = render(Page, defaultData)
 
       await waitFor(() => {
         expect(getByTestId('title_1').textContent).toBe('Test tarea 1')
@@ -52,7 +52,7 @@ describe('Página principal de tareas', () => {
     })
 
     it('debería renderizar el nombre del asignado a la tarea', async () => {
-      const { getByTestId } = render(Page,defaultData)
+      const { getByTestId } = render(Page, defaultData)
 
       await waitFor(() => {
         expect(getByTestId('description_1').textContent).toBe('Marcelo - 01/06/2024')
@@ -62,7 +62,7 @@ describe('Página principal de tareas', () => {
     })
 
     it('debería renderizar el nombre del asignado a la tarea', async () => {
-      const { getByTestId } = render(Page,defaultData)
+      const { getByTestId } = render(Page, defaultData)
 
       await waitFor(() => {
         expect(getByTestId('porcentaje_1').textContent).toBe('✅')
@@ -72,12 +72,12 @@ describe('Página principal de tareas', () => {
     })
 
     it('al cumplir la tarea debe dejarla al 100%', async () => {
-      const { getByTestId, rerender } = render(Page,defaultData)
+      const { getByTestId, rerender } = render(Page, defaultData)
       const tareas = mockTareas()
       const updated = [
-        Object.assign(new Tarea(),tareas[0]),
-        Object.assign(new Tarea(),tareas[1]),
-        Object.assign(new Tarea(),tareas[2], {porcentajeCumplimiento: 100} )
+        Object.assign(new Tarea(), tareas[0]),
+        Object.assign(new Tarea(), tareas[1]),
+        Object.assign(new Tarea(), tareas[2], {porcentajeCumplimiento: 100} )
       ]
       mockInvalidate(rerender, updated)
       const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
@@ -90,7 +90,7 @@ describe('Página principal de tareas', () => {
 
     it('al cumplir la tarea si falla debe mostrar el mensaje de error', async () => {
       vi.mocked(axios.put).mockRejectedValue({ error: { response: { data: { message: 'Unexpected error'}}}, status: 400 })
-      const { getByTestId } = render(Page,defaultData)
+      const { getByTestId } = render(Page, defaultData)
       
       const botonCumplir = await waitFor(() => getByTestId('cumplir_3'))
       await userEvent.click(botonCumplir)
@@ -105,8 +105,8 @@ describe('Página principal de tareas', () => {
       vi.mocked(axios.delete).mockResolvedValue({ data: tareas[2], status: 200 })
       const { getByTestId, queryByTestId, rerender} = render(Page, defaultData)      
       const updatedList = [
-        Object.assign(new Tarea(),tareas[0]),
-        Object.assign(new Tarea(),tareas[1]),
+        Object.assign(new Tarea(), tareas[0]),
+        Object.assign(new Tarea(), tareas[1]),
       ]
       mockInvalidate(rerender, updatedList)
       const botonCumplir = await waitFor(() => getByTestId('eliminar_3'))

@@ -14,8 +14,8 @@ import { Usuario } from '$lib/domain/usuario'
 import axios from 'axios'
 
 const mockTareas = [
-  new Tarea(1,'Test tarea 1','Iteración 1',new Usuario('Marcelo'),new Date('2024-06-01'),100),
-  new Tarea(2,'Test tarea 2','Iteración 2',undefined,new Date('2024-06-02'),30),
+  new Tarea(1, 'Test tarea 1', 'Iteración 1', new Usuario('Marcelo'), new Date('2024-06-01'), 100),
+  new Tarea(2, 'Test tarea 2', 'Iteración 2', undefined, new Date('2024-06-02'), 30),
 ]
 
 describe('+page.ts load', () => {
