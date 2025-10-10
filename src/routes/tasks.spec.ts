@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, waitFor, type SvelteComponentOptions } from '@testing-library/svelte'
 import Page from './+page.svelte'
 import { Tarea } from '$lib/domain/tarea'
-import axios from 'axios'
 import userEvent from '@testing-library/user-event'
 
 vi.mock('axios')
@@ -13,6 +12,8 @@ vi.mock('$app/navigation', () => ({
   goto: vi.fn(),
   invalidate: vi.fn().mockResolvedValue(true)
 }))
+
+import axios from 'axios'
 
 import { invalidate, goto } from '$app/navigation'
 import { showError } from '$lib/domain/errorHandler'
