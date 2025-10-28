@@ -8,7 +8,6 @@ vi.mock('$lib/domain/errorHandler', () => ({
 
 vi.mock('axios')
 
-import { showError } from '$lib/domain/errorHandler'
 import { Tarea } from '$lib/domain/tarea'
 import { Usuario } from '$lib/domain/usuario'
 import axios from 'axios'
@@ -36,9 +35,9 @@ describe('+page.ts load', () => {
     const err = new Error('network')
     vi.mocked(axios.get).mockRejectedValue(err)
 
-    const { tareas } = await load({depends: vi.fn(), params:{}} as unknown as Parameters<typeof load>[0])
+    const { tareas, error } = await load({depends: vi.fn(), params:{}} as unknown as Parameters<typeof load>[0])
 
-    expect(showError).toHaveBeenCalledWith('Conexión al servidor', err)
     expect(tareas).toEqual([])
+    expect(error).toEqual(err)
   })
 })
