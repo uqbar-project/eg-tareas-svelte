@@ -1,14 +1,22 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { showError } from '$lib/domain/errorHandler'
-  import type { Tarea } from '$lib/domain/tarea'
+  import { Tarea } from '$lib/domain/tarea'
   import { tareaService } from '$lib/services/tareaService'
   import './main.css'
   import type { PageProps } from './$types'
   import { invalidate } from '$app/navigation'
+  import { onMount } from 'svelte'
 
   let { data }: PageProps = $props()
   let tareas = $derived(data.tareas)
+  let error = $derived(data.error)
+
+  onMount(() => {
+    if (error) {
+      showError('Error al cargar las tareas', error)
+    }
+  })
 
   const buscarTareas = async () => {
     await invalidate('tareas:list')
@@ -16,12 +24,12 @@
 
   const cumplir = async (tarea: Tarea) => {
     try {
-      tarea.cumplir()
-      await tareaService.actualizarTarea(tarea)
+      const tareaNew = Tarea.fromJson(tarea.toJSON()) // hacemos una copia para no modificar la tarea original
+      tareaNew.cumplir()
+      await tareaService.actualizarTarea(tareaNew)
+      await buscarTareas()
     } catch (error: unknown) {
       showError('Error al cumplir la tarea', error)
-    } finally {
-      await buscarTareas()
     }
   }
 
@@ -35,7 +43,6 @@
       buscarTareas()
     } catch (error: unknown) {
       showError('Error al eliminar la tarea', error)
-      await buscarTareas()
     }
   }
 
