@@ -24,6 +24,7 @@ class TareaService {
     return axios.post(REST_SERVER_URL + '/tareas', tarea.toJSON())
   }
 
+  // BUGAZO!!! Cambiarlo por id
   async eliminarTarea(tarea: Tarea) {
     return axios.delete(REST_SERVER_URL + '/tareas/' + tarea.descripcion)
   }

@@ -78,6 +78,12 @@ const editarTarea = async ({
   asignadoA,
   fecha,
   porcentajeCumplimiento
+}: {
+  descripcion: string,
+  iteracion: string,
+  asignadoA: string,
+  fecha: string,
+  porcentajeCumplimiento: number,
 }, page: Page) => {
   await page.getByTestId('descripcion').fill(descripcion)
   await page.getByTestId('iteracion').fill(iteracion)

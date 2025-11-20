@@ -62,6 +62,11 @@ describe('tarea', () => {
     expect(tarea.sePuedeCumplir()).toBe(false)
   })
 
+  it('no se puede cumplir una tarea si no está asignada', () => {
+    tarea.asignatario = undefined
+    expect(tarea.sePuedeCumplir()).toBe(false)
+  })
+
   it('debe cumplir la tarea', () => {
     tarea.cumplir()
     expect(tarea.porcentajeCumplimiento).toBe(100)
